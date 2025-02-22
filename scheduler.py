@@ -17,7 +17,9 @@ employees = [
     {"name": "Carter", "unavailable_shifts": [
         {"day": "Friday", "shifts": ["7am-3pm", "3pm-11pm"]}
     ]},
-    {"name": "Alex", "unavailable_shifts": []}
+    {"name": "Alex", "unavailable_shifts": [
+        {"day": "Friday", "shifts": ["7am-3pm", "3pm-11pm"]}
+    ]}
 ]
 
 
@@ -33,6 +35,7 @@ open_shift_times = {
 }
 
 
+# helper function to determine how many times an employee is scheduled to work
 def employee_num_total_shifts_scheduled(schedule, employee_name):
     count = 0
     for shifts in schedule.values():
@@ -42,6 +45,7 @@ def employee_num_total_shifts_scheduled(schedule, employee_name):
     return count
 
 
+# helper function to determine if an employee is scheduled to work more than one shift on a single day
 def employee_num_day_shifts_scheduled(schedule, employee_name, day):
     count = 0
     if day in schedule:
@@ -84,11 +88,13 @@ def is_schedule_valid(schedule, employees, employee, open_shift_times, employee_
     schedule[day].append({"name": employee["name"], "shift": shift_time})
     open_shift_times.discard((day, shift_time))
 
+    # zero open shifts remaining means every employee succesfully scheduled while adhering to constraints
     if len(open_shift_times) == 0:
         return True
 
     for emp in employees:
         for (openDay, openTime) in open_shift_times:
+            # create a copy of the set since it can't be altered during an iteration
             open_shift_times_copy = open_shift_times.copy()
             res = is_schedule_valid(
                 schedule, employees, emp, open_shift_times_copy, employee_unavailable_shifts, openDay, openTime)
